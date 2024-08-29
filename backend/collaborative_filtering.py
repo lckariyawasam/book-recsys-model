@@ -79,7 +79,42 @@ class CollaborativeFiltering:
         if count is None:
             return rec_percentages.sort_values("score", ascending=False)
         else:
-            return rec_percentages.sort_values("score", ascending=False).head(count)
+            return rec_percentages.sort_values("score", ascending=False).head(count+1)
+        
+
+    def get_recommendations_from_multiple_books(self, titles, rating_threshold=8, rating_lower_bound=7, minimum_similarity=0.03, normalize=False, count=None):
+        """
+        Get recommendations based on multiple book titles.
+
+        Inputs:
+        titles: list of book titles to base recommendations on
+        rating_threshold: minimum rating to consider a user as similar
+        rating_lower_bound: minimum rating for a book to be recommended
+        minimum_similarity: minimum similarity to consider a book (0 < minimum_similarity < 1)
+        normalize: whether to normalize the recommendations
+        count: number of top recommendations to return
+
+        Returns:
+        aggregated_recommendations: sorted list of recommended books
+        """
+        combined_recs = pd.Series()
+
+        for title in titles:
+            similar_users = self.get_similar_users(title, rating_threshold)
+            recs = self.get_recommendations_from_similar_users(similar_users, rating_lower_bound, minimum_similarity, normalize, count)
+            combined_recs = combined_recs.add(recs, fill_value=0)
+
+        # Aggregate recommendations by summing the scores
+        aggregated_recs = combined_recs.groupby(level=0).sum()
+
+        # Sort recommendations by score in descending order
+        sorted_recs = aggregated_recs.sort_values(ascending=False)
+
+        if count is None:
+            return sorted_recs
+        else:
+            return sorted_recs.head(count)
+            
 
 
 cfmodel = CollaborativeFiltering()

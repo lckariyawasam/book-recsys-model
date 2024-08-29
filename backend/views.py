@@ -4,7 +4,7 @@ from collaborative_filtering import cfmodel
 
 
 
-def get_books(title_input: str):
+def recommend_from_one(title_input: str):
     rating_lower_bound = 8
     title = cfmodel.search(title_input, result_count=1).values[0]
     print("The title is :", title)
@@ -16,21 +16,15 @@ def get_books(title_input: str):
     #     print(recommendation, score)
     
     # Return a dictionary of recommendation and score
-    return recommendations.to_dict()
+    return recommendations[1:].to_dict()
 
-def get_item(item_id: str):
-    print(item_id)
-    return db.books.find_all()
-    return db.items.find_one({"_id": ObjectId(item_id)})
 
-def create_item(item_data):
-    result = db.items.insert_one(item_data)
-    return str(result.inserted_id)
-
-def update_item(item_id: str, item_data):
-    db.items.update_one({"_id": ObjectId(item_id)}, {"$set": item_data})
-    return get_item(item_id)
-
-def delete_item(item_id: str):
-    db.items.delete_one({"_id": ObjectId(item_id)})
-    return True
+def recommend_from_multiple(titles_input: list):
+    titles_input = [cfmodel.search(title, result_count=1).values[0] for title in titles_input]
+    rating_lower_bound = 8
+    recommendations = cfmodel.get_recommendations_from_multiple_books(titles_input, rating_lower_bound, count=15)
+    # for recommendation, score in recommendations.items():
+    #     print(recommendation, score)
+    
+    # Return a dictionary of recommendation and score
+    return recommendations[1:].to_dict()
