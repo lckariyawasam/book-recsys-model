@@ -1,9 +1,22 @@
 from fastapi import FastAPI, HTTPException
-# from models import BookTitle
+from fastapi.middleware.cors import CORSMiddleware
+from models import BookRequest
 from typing import List
 import views
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -12,10 +25,12 @@ def read_root():
 
 
 @app.post("/similar")
-def get_similar_books(id: str, k: int = 10):
+def get_similar_books(book: BookRequest):
     # print(title)
     # result = views.recommend_from_one(title.title)
     # return result
+    id = book.id
+    k = book.k
     return views.get_similar(id, k)
 
 
