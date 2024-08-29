@@ -39,3 +39,9 @@ def recommend_books(titles: List[str]):
     print(titles)
     result = views.recommend_from_multiple(titles)
     return result
+
+
+@app.get("/search")
+def search_books(title: str):
+    result = views.search_books(title)
+    return result

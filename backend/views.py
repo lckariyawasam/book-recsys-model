@@ -7,6 +7,11 @@ import json
 
 
 
+def search_books(title: str):
+    result = cfmodel.search(title)
+    print(result)
+    return result
+
 def get_similar(id: str, k: int = 10):
     indexes = find_similar_books(str(id), top_k=k)
     if not indexes:
