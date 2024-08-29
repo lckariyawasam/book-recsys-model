@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from models import BookTitle
+# from models import BookTitle
+from typing import List
 import views
 
 app = FastAPI()
@@ -10,15 +11,16 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/similar")
-def get_similar_books(title: BookTitle):
-    print(title)
-    result = views.recommend_from_one(title.title)
-    return result
+@app.post("/similar")
+def get_similar_books(id: str, k: int = 10):
+    # print(title)
+    # result = views.recommend_from_one(title.title)
+    # return result
+    return views.get_similar(id, k)
 
 
-@app.get("/recommend")
-def recommend_books(titles: list[BookTitle]):
+@app.post("/recommend")
+def recommend_books(titles: List[str]):
     print(titles)
-    result = views.recommend_from_multiple([title.title for title in titles])
+    result = views.recommend_from_multiple(titles)
     return result

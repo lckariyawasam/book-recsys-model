@@ -1,7 +1,22 @@
 from bson.objectid import ObjectId
 from database import db
 from collaborative_filtering import cfmodel
+from vectordb import find_similar_books
+from db import  mongodb
+import json
 
+
+
+def get_similar(id: str, k: int = 10):
+    indexes = find_similar_books(str(id), top_k=k)
+    if not indexes:
+        return []
+    
+    similar_books = []
+    for index in indexes:
+        similar_books.append(mongodb.find_one({"id": index}))
+    print(similar_books)
+    return similar_books
 
 
 def recommend_from_one(title_input: str):
