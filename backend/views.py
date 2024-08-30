@@ -8,9 +8,14 @@ import json
 
 
 def search_books(title: str):
-    result = cfmodel.search(title)
-    print(result)
-    return result
+    results = cfmodel.search(title)
+    print(results)
+    books = []
+    for result in results:
+        book = cfmodel.books_df[cfmodel.books_df["Book-Title"] == result]
+        book = book.to_dict(orient="records")[0]
+        books.append(book)
+    return books
 
 def get_similar(id: str, k: int = 10):
     indexes = find_similar_books(str(id), top_k=k)
