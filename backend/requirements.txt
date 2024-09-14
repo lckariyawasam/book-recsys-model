@@ -1,0 +1,8 @@
+fastapi==0.114.2
+numpy==2.1.1
+pandas==2.2.2
+pinecone==5.1.0
+pydantic==2.9.1
+pymongo==4.8.0
+python-dotenv==1.0.1
+scikit_learn==1.5.2
