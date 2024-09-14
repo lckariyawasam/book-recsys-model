@@ -26,12 +26,14 @@ def read_root():
 
 @app.post("/similar")
 def get_similar_books(book: BookRequest):
-    # print(title)
-    # result = views.recommend_from_one(title.title)
-    # return result
     id = book.id
     k = book.k
     return views.get_similar(id, k)
+
+@app.post("/item_recommendations")
+def get_item_recommendations(book_ids: List[str]):
+    result = views.get_item_based_recommendations(book_ids)
+    return result
 
 
 @app.post("/recommend")
