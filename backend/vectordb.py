@@ -25,7 +25,6 @@ def find_similar_items(book_ids, top_k=10):
         # Query Pinecone for similar items
         response = item_index.query(id=str(item_id), top_k=top_k)
         results.extend(response['matches'])
-        
     # Aggregate and rank results
     ranked_items = {}
     for result in results:
