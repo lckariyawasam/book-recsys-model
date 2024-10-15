@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from models import BookRequest
 from typing import List
@@ -25,10 +25,16 @@ def read_root():
 
 
 @app.post("/similar")
-def get_similar_books(book: BookRequest):
+def get_similar_books(book: BookRequest, response: Response):
     id = book.id
     k = book.k
-    return views.get_similar(id, k)
+    recommendations =  views.get_similar(id, k)
+
+    if len(recommendations) == 0:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return recommendations
+    else:
+        return recommendations
 
 @app.post("/item_recommendations")
 def get_item_recommendations(book_ids: List[str]):
