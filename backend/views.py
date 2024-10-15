@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from database import db
 from collaborative_filtering import cfmodel
-from vectordb import find_similar_books
+from vectordb import find_similar_books, find_similar_items
 from db import  mongodb
 import json
 
@@ -18,31 +18,29 @@ def search_books(title: str):
     return books
 
 def get_similar(id: str, k: int = 10):
-    indexes = find_similar_books(str(id), top_k=k)
-    if not indexes:
+    indexes_with_scores = find_similar_books(str(id), top_k=k)
+    if not indexes_with_scores:
         return []
-    
     similar_books = []
-    for index in indexes:
+    for index, score in indexes_with_scores:
         book = mongodb.find_one({"id": index})
-
-        # Convert the authors and categories columns into lists
-        try:
-            book["authors"] = eval(book["authors"])
-            print(book["authors"], type(book["authors"]))
-        except:
-            pass
-
-        try:
-            book["categories"] = eval(book["categories"])
-            print(book["categories"], type(book["categories"]))
-        except:
-            pass
-
-        similar_books.append(book)
-    print(similar_books)
+        if book:
+            book['score'] = score
+            similar_books.append(book)
     return similar_books
 
+
+def get_item_based_recommendations(book_ids: list, k: int = 10):
+    indexes_with_scores = find_similar_items(book_ids, top_k=k)
+    if not indexes_with_scores:
+        return []
+    recommended_books = []
+    for index, score in indexes_with_scores:
+        book = mongodb.find_one({"id": int(index)})
+        if book:
+            book['score'] = score
+            recommended_books.append(book)
+    return recommended_books
 
 def recommend_from_one(title_input: str):
     rating_lower_bound = 8
