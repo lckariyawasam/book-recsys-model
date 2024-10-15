@@ -28,18 +28,31 @@ def test_similar():
 
     # Check that each book object is complete
     for book in response_json:
-        assert "Book" in book
-        assert "Author" in book
-        assert "Description" in book
-        assert "Genres" in book
-        assert "Avg_Rating" in book
-        assert type(book["Avg_Rating"]) == float
-        assert "URL" in book
+        assert "Title" in book
+        assert "authors" in book
+        assert "description" in book
+        assert "categories" in book
+        # assert "Avg_Rating" in book
+        # assert type(book["Avg_Rating"]) == float
+        assert "previewLink" in book
         assert "id" in book
 
 
 def test_recommendations():
-    book_ids = []
-    response = client.post("/recommend", json={
-        "titles": book_ids
-    })
+    book_ids = ["90402","60834"]
+    response = client.post("/item_recommendations", json=book_ids)
+
+    assert response.status_code == 200
+
+    response_json = response.json()
+
+    assert type(response_json) == list
+    for book in response_json:
+        assert "Title" in book
+        assert "authors" in book
+        assert "description" in book
+        assert "categories" in book
+        # assert "Avg_Rating" in book
+        # assert type(book["Avg_Rating"]) == float
+        assert "previewLink" in book
+        assert "id" in book
