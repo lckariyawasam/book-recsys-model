@@ -24,7 +24,22 @@ def get_similar(id: str, k: int = 10):
     
     similar_books = []
     for index in indexes:
-        similar_books.append(mongodb.find_one({"id": index}))
+        book = mongodb.find_one({"id": index})
+
+        # Convert the authors and categories columns into lists
+        try:
+            book["authors"] = eval(book["authors"])
+            print(book["authors"], type(book["authors"]))
+        except:
+            pass
+
+        try:
+            book["categories"] = eval(book["categories"])
+            print(book["categories"], type(book["categories"]))
+        except:
+            pass
+
+        similar_books.append(book)
     print(similar_books)
     return similar_books
 
