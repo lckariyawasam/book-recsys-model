@@ -89,7 +89,7 @@ def initialize_lightgcn_model():
             sampler='popular',
             device="cpu",
         )
-        
+        print("training the model")
         # Train the model
         lightgcn.fit(
             train_data,
@@ -107,6 +107,8 @@ def initialize_lightgcn_model():
         data_info.save(path_for_rebuild, model_name)
         lightgcn.save(path_for_rebuild, model_name,manual=True, inference_only=False)
         model = lightgcn
+
+        print("Model trained and saved")
     # Set up the scheduler
     scheduler = BackgroundScheduler()
     
