@@ -27,11 +27,13 @@ class Database:
             return self.ratings_collection.find({}, {"_id": 0})
 
     def find_one(self, query, collection_name):
+        result = None
+        print(query)
         if collection_name == "books":
             result = self.books_collection.find_one(query)
         elif collection_name == "ratings":
             result = self.ratings_collection.find_one(query)
-        if result:
+        if result is not None:
             result.pop("_id")
             return result
         

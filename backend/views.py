@@ -24,7 +24,20 @@ def get_recommendations_for_user(user_id: str, k: int = 10):
         if book:
             book['score'] = score
             recommended_books.append(book)
-    return recommended_books
+
+    if len(recommended_books) != 0:
+        return recommended_books
+    
+    ### If the user is not included in the latest trained model, we will use the item-based recommendations
+    else:
+        rated_items = mongodb.ratings_collection.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
+        book_ids = []
+        if rated_items:
+            for item in rated_items:
+                book_ids.append(item['item'])
+            return get_item_based_recommendations(book_ids, k)
+        else:
+            return []
 
 def get_item_based_recommendations(book_ids: list, k: int = 10):
     recommendations = recommendations_for_books(book_ids, top_k=k)

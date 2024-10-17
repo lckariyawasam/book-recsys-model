@@ -29,18 +29,20 @@ def recommendations_for_user(user_id, top_k=10):
         return recommendations
     except Exception as e:
         print(f"Error finding recommendations for user: {e}")
-        return []
+        return {}
 
 def recommendations_for_books(book_ids, top_k=10):
     book_ids = [int(book_id) for book_id in book_ids]
     k = math.ceil(top_k / len(book_ids))
     nearest_neighbors = []
     for book_id in book_ids:
-        query_result = item_index.query(id=str(book_id), top_k=k)
-        similar_items = [(int(match['id']), match['score']) for match in query_result['matches']]
+        query_result = item_index.query(id=str(book_id), top_k=k+len(book_ids))
+        similar_items = [(int(match['id']), match['score']) for match in query_result['matches'] if int(match['id']) not in book_ids]
         nearest_neighbors.extend(similar_items)
     # sort nearest_neighbors by score
     nearest_neighbors.sort(key=lambda x: x[1], reverse=True)
+    if len(nearest_neighbors) > top_k:
+        nearest_neighbors = nearest_neighbors[:top_k]
     return nearest_neighbors
 
 
