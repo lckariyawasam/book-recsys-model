@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import BookRequest
+from models import BookRequest, UserRequest
 from typing import List
 import views
+from contextlib import asynccontextmanager
 
 app = FastAPI()
 
@@ -30,20 +31,12 @@ def get_similar_books(book: BookRequest):
     k = book.k
     return views.get_similar(id, k)
 
+@app.post("/recommendations")
+def get_recommendations_for_user(user: UserRequest):
+    user_id = user.user_id
+    k = user.k
+    return views.get_recommendations_for_user(user_id, k)
+
 @app.post("/item_recommendations")
 def get_item_recommendations(book_ids: List[str]):
-    result = views.get_item_based_recommendations(book_ids)
-    return result
-
-
-@app.post("/recommend")
-def recommend_books(titles: List[str]):
-    print(titles)
-    result = views.recommend_from_multiple(titles)
-    return result
-
-
-@app.get("/search")
-def search_books(title: str):
-    result = views.search_books(title)
-    return result
+    return views.get_item_based_recommendations(book_ids)
