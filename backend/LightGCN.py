@@ -28,7 +28,7 @@ def load_lightgcn_model():
 
 def rebuild_lightgcn_model():
     # new_df = pd.DataFrame(mongodb.find_all("ratings"))
-    new_df = pd.read_csv("data/ratings.csv")
+    new_df = pd.read_csv("dataset/ratings.csv")
     data_info = DataInfo.load(path_for_rebuild, model_name)
     reset_state("retrain")
     train_data, data_info_new = DatasetFeat.merge_trainset(new_df, data_info, merge_behavior=True)
@@ -72,7 +72,7 @@ def initialize_lightgcn_model():
         model.save(path_for_rebuild, model_name,manual=True, inference_only=False)
     else:
         # Load the ratings data (from CSV or database)
-        ratings = pd.read_csv("data/ratings.csv")
+        ratings = pd.read_csv("dataset/ratings.csv")
         
         # Build the train dataset and data info
         train_data, data_info = DatasetPure.build_trainset(ratings)
@@ -83,7 +83,7 @@ def initialize_lightgcn_model():
             data_info=data_info,
             loss_type="bpr",
             embed_size=768,
-            n_epochs=1,
+            n_epochs=3,
             lr=0.01,
             num_neg=1,
             sampler='popular',
