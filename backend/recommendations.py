@@ -14,7 +14,7 @@ def find_similar_books(book_id, top_k=10):
 def recommendations_for_user(user_id, top_k=10):
     try:
         user_id = int(user_id)
-        results = model.recommend_user(user=user_id, n_rec=top_k)
+        results = model.recommend_user(user=user_id, n_rec=top_k, cold_start='popular')
         # Ensure results[user_id] is a list
         books_ids = results[user_id].tolist() if hasattr(results[user_id], 'tolist') else [results[user_id]]
         scores = []
