@@ -32,8 +32,11 @@ def recommendations_for_user(user_id, top_k=10):
         return {}
 
 def recommendations_for_books(book_ids, top_k=10):
+    if len(book_ids) == 0:
+        return []  # Return an empty list if no book_ids are provided
+
     book_ids = [int(book_id) for book_id in book_ids]
-    k = math.ceil(top_k / len(book_ids))
+    k = math.ceil(top_k / len(book_ids) + 1)
     nearest_neighbors = []
     for book_id in book_ids:
         query_result = item_index.query(id=str(book_id), top_k=k+len(book_ids))
@@ -44,6 +47,7 @@ def recommendations_for_books(book_ids, top_k=10):
     if len(nearest_neighbors) > top_k:
         nearest_neighbors = nearest_neighbors[:top_k]
     return nearest_neighbors
+
 
 
 

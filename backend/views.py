@@ -51,6 +51,16 @@ def get_item_based_recommendations(book_ids: list, k: int = 10):
     return recommended_books
 
 def get_all_recommendations_for_user(user_id: str, k: int = 10):
+    # Helper function to add unique recommendations
+    def add_unique_recommendation(book, score):
+        if book['book_id'] not in rated_book_ids and not any(rec['book_id'] == book['book_id'] for rec in recommended_books):
+            book['score'] = score
+            recommended_books.append(book)
+    
+    # Get user's rated books
+    rated_items = mongodb.ratings_collection.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
+    rated_book_ids = set(item['item'] for item in rated_items)
+    
     # Get user-based recommendations
     recommendations = recommendations_for_user(user_id, top_k=k)
     recommended_books = []
@@ -59,15 +69,6 @@ def get_all_recommendations_for_user(user_id: str, k: int = 10):
         if book:
             add_unique_recommendation(book, score)
     
-    # Get user's rated books
-    rated_items = mongodb.ratings_collection.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
-    rated_book_ids = set(item['item'] for item in rated_items)
-    
-    # Helper function to add unique recommendations
-    def add_unique_recommendation(book, score):
-        if book['book_id'] not in rated_book_ids and not any(rec['book_id'] == book['book_id'] for rec in recommended_books):
-            book['score'] = score
-            recommended_books.append(book)
     
     # Process item-based recommendations
     item_based_recommendations = recommendations_for_books(list(rated_book_ids), top_k=10)
