@@ -51,23 +51,21 @@ def get_item_based_recommendations(book_ids: list, k: int = 10):
     return recommended_books
 
 def get_all_recommendations_for_user(user_id: str, k: int = 10):
+    print(user_id)
+    
+    # Get user's rated books
+    rated_items = mongodb.temp_ratings.find({"userId": int(user_id)}, {"_id": 0, "bookId": 1}).sort("rating", -1)
+    rated_book_ids = set(item['bookId'] for item in rated_items)
+    print(rated_book_ids)
+    
     # Helper function to add unique recommendations
     def add_unique_recommendation(book, score):
         if book['book_id'] not in rated_book_ids and not any(rec['book_id'] == book['book_id'] for rec in recommended_books):
             book['score'] = score
             recommended_books.append(book)
     
-    # Get user's rated books
-    rated_items = mongodb.temp_ratings.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
-    rated_book_ids = set(item['item'] for item in rated_items)
     
-    # Get user-based recommendations
-    recommendations = recommendations_for_user(user_id, top_k=k)
     recommended_books = []
-    for book_id, score in recommendations.items():
-        book = mongodb.find_one({"book_id": book_id}, "books")
-        if book:
-            add_unique_recommendation(book, score)
     
     
     # Process item-based recommendations
@@ -82,6 +80,14 @@ def get_all_recommendations_for_user(user_id: str, k: int = 10):
         similar_books = find_similar_books(str(book_id), 10)
         for similar_book_id, score in similar_books:
             book = mongodb.find_one({"book_id": similar_book_id}, "books")
+            if book:
+                add_unique_recommendation(book, score)
+    
+    # only if no recommendations were found, we will use the user-based recommendations     
+    if len(recommended_books) == 0:
+        recommendations = recommendations_for_user(user_id, top_k=k)
+        for book_id, score in recommendations.items():
+            book = mongodb.find_one({"book_id": book_id}, "books")
             if book:
                 add_unique_recommendation(book, score)
     

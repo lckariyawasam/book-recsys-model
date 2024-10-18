@@ -12,7 +12,7 @@ class Database:
         self.db = self.client[os.environ.get("DATABASE_NAME")]
         self.books_collection = self.db[os.environ.get("BOOKS_COLLECTION_NAME")]
         self.ratings_collection = self.db[os.environ.get("RATINGS_COLLECTION_NAME")]
-        self.temp_ratings = self.db["RatedListItems"]
+        self.temp_ratings = self.db.RatedListItem
 
     def insert(self, data, collection_name):
         if collection_name == "books":

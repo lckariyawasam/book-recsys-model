@@ -4,6 +4,7 @@ __pycache__
 _misc
 data/
 model/
+delete.py
 saved_model/
 saved_model/**/tests
 */venv
