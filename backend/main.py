@@ -40,3 +40,9 @@ def get_recommendations_for_user(user: UserRequest):
 @app.post("/item_recommendations")
 def get_item_recommendations(book_ids: List[str]):
     return views.get_item_based_recommendations(book_ids)
+
+@app.post("/all_recommendations")
+def get_all_recommendations(user: UserRequest):
+    user_id = user.user_id
+    k = user.k
+    return views.get_all_recommendations_for_user(user_id, k)
