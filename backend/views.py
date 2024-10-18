@@ -58,7 +58,7 @@ def get_all_recommendations_for_user(user_id: str, k: int = 10):
             recommended_books.append(book)
     
     # Get user's rated books
-    rated_items = mongodb.ratings_collection.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
+    rated_items = mongodb.temp_ratings.find({"user": user_id}, {"_id": 0, "item": 1}).sort("rating", -1).limit(10)
     rated_book_ids = set(item['item'] for item in rated_items)
     
     # Get user-based recommendations
