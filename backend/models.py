@@ -7,3 +7,7 @@ class BookTitle(BaseModel):
 class BookRequest(BaseModel):
     id: str
     k: int
+    
+class UserRequest(BaseModel):
+    user_id: str
+    k: int

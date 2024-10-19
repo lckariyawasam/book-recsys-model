@@ -3,7 +3,9 @@
 __pycache__
 _misc
 data/
-**/tests
-
+model/
+delete.py
+saved_model/
+saved_model/**/tests
 */venv
 **/recommenders_microsoft
