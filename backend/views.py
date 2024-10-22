@@ -51,12 +51,10 @@ def get_item_based_recommendations(book_ids: list, k: int = 10):
     return recommended_books
 
 def get_all_recommendations_for_user(user_id: str, k: int = 10):
-    print(user_id)
     
     # Get user's rated books
     rated_items = mongodb.temp_ratings.find({"userId": int(user_id)}, {"_id": 0, "bookId": 1}).sort("rating", -1)
     rated_book_ids = set(item['bookId'] for item in rated_items)
-    print(rated_book_ids)
     
     # Helper function to add unique recommendations
     def add_unique_recommendation(book, score):
