@@ -1,6 +1,7 @@
 from vectordb import book_index, item_index, user_index
 from LightGCN import model
 import math
+import numpy as np
 
 def find_similar_books(book_id, top_k=10):
     try:
@@ -35,18 +36,27 @@ def recommendations_for_books(book_ids, top_k=10):
     if len(book_ids) == 0:
         return []  # Return an empty list if no book_ids are provided
 
+    # Convert book_ids to integers
     book_ids = [int(book_id) for book_id in book_ids]
-    k = math.ceil(top_k / len(book_ids) + 1)
-    nearest_neighbors = []
-    for book_id in book_ids:
-        query_result = item_index.query(id=str(book_id), top_k=k+len(book_ids))
-        similar_items = [(int(match['id']), match['score']) for match in query_result['matches'] if int(match['id']) not in book_ids]
-        nearest_neighbors.extend(similar_items)
-    # sort nearest_neighbors by score
-    nearest_neighbors.sort(key=lambda x: x[1], reverse=True)
-    if len(nearest_neighbors) > top_k:
-        nearest_neighbors = nearest_neighbors[:top_k]
-    return nearest_neighbors
+
+    # Get embeddings for each book
+    embeddings = [model.get_item_embedding(book_id) for book_id in book_ids]
+
+    # Calculate average embedding
+    avg_embedding = np.mean(embeddings, axis=0)
+
+    # Query Pinecone index with the average embedding
+    query_result = item_index.query(vector=avg_embedding.tolist(), top_k=top_k+len(book_ids))
+
+    # Process results, excluding input books
+    nearest_neighbors = [
+        (int(match['id']), match['score']) 
+        for match in query_result['matches'] 
+        if int(match['id']) not in book_ids
+    ]
+
+    # Trim to top_k results if necessary
+    return nearest_neighbors[:top_k]
 
 
 
